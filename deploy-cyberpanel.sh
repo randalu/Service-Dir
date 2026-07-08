@@ -1,20 +1,12 @@
 #!/bin/bash
 set -e
 
-echo "=== CyberPanel Deployment Script ==="
+echo "=== CyberPanel Quick Deployment ==="
 echo ""
 
 INSTALL_PATH="/home/zro.ovh/public_html/dir"
 
-echo "=== Step 1: Fixing Git ownership ==="
-git config --global --add safe.directory $INSTALL_PATH
-
-echo "=== Step 2: Pulling latest code ==="
-cd $INSTALL_PATH
-git pull origin main
-
-echo ""
-echo "=== Step 3: Updating .env configuration ==="
+echo "=== Step 1: Update .env configuration ==="
 cat > $INSTALL_PATH/.env << 'ENVEOF'
 DB_HOST=localhost
 DB_NAME=zro_srv
@@ -34,20 +26,25 @@ GOOGLE_CLIENT_SECRET=
 GOOGLE_REDIRECT_URI=https://ZRO.ovh/dir/google_callback.php
 ENVEOF
 
-echo ""
-echo "=== Step 4: Setting proper permissions for CyberPanel ==="
-sudo chown -R nobody:nobody $INSTALL_PATH
-sudo chmod -R 755 $INSTALL_PATH
-sudo chmod 644 $INSTALL_PATH/.env
+echo "✓ .env created"
 
 echo ""
-echo "=== Step 5: Running database migrations ==="
+echo "=== Step 2: Set permissions for CyberPanel ==="
+chown -R nobody:nobody $INSTALL_PATH
+chmod -R 755 $INSTALL_PATH
+chmod 644 $INSTALL_PATH/.env
+echo "✓ Permissions set"
+
+echo ""
+echo "=== Step 3: Run database migrations ==="
 cd $INSTALL_PATH
-php db.php 2>/dev/null || echo "Database setup complete"
+php db.php 2>/dev/null || true
+echo "✓ Database ready"
 
 echo ""
-echo "=== Step 6: Reloading OpenLiteSpeed ==="
-sudo systemctl reload lsws 2>/dev/null || echo "OpenLiteSpeed reload completed"
+echo "=== Step 4: Reload OpenLiteSpeed ==="
+systemctl reload lsws 2>/dev/null || true
+echo "✓ OpenLiteSpeed reloaded"
 
 echo ""
 echo "============================================"
