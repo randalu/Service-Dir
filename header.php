@@ -12,13 +12,52 @@ $allCategories = $pdo->query("SELECT * FROM categories ORDER BY name")->fetchAll
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title><?= htmlspecialchars(getSetting('site_name', 'Service Directory')) ?> - <?= $pageTitle ?? 'Home' ?></title>
+  <title><?= htmlspecialchars($pageTitle ?? getSetting('site_name', 'Service Directory')) ?></title>
+  <meta name="description" content="<?= htmlspecialchars($metaDesc ?? getSetting('site_name', 'Local Service Directory for Raddoluwa/Seeduwa area')) ?>">
+  <link rel="canonical" href="<?= htmlspecialchars($canonicalUrl ?? APP_URL) ?>" />
+  <meta property="og:type" content="<?= $ogType ?? 'website' ?>">
+  <meta property="og:title" content="<?= htmlspecialchars($pageTitle ?? getSetting('site_name', 'Service Directory')) ?>">
+  <meta property="og:description" content="<?= htmlspecialchars($metaDesc ?? getSetting('site_name', 'Local Service Directory for Raddoluwa/Seeduwa area')) ?>">
+  <meta property="og:url" content="<?= htmlspecialchars($canonicalUrl ?? APP_URL) ?>">
+  <meta property="og:image" content="<?= htmlspecialchars($ogImage ?? rtrim(APP_URL, '/') . '/default-og.png') ?>">
+  <meta property="og:site_name" content="<?= htmlspecialchars(getSetting('site_name', 'Service Directory')) ?>">
+  <meta name="twitter:card" content="<?= $twitterCard ?? 'summary_large_image' ?>">
+  <meta name="twitter:title" content="<?= htmlspecialchars($pageTitle ?? getSetting('site_name', 'Service Directory')) ?>">
+  <meta name="twitter:description" content="<?= htmlspecialchars($metaDesc ?? getSetting('site_name', 'Local Service Directory for Raddoluwa/Seeduwa area')) ?>">
+  <meta name="twitter:image" content="<?= htmlspecialchars($ogImage ?? rtrim(APP_URL, '/') . '/default-og.png') ?>">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <?= $pageHead ?? '' ?>
+<?php
+// JSON-LD Structured Data — Organization
+$orgLd = [
+    '@context' => 'https://schema.org',
+    '@type' => 'Organization',
+    'name' => getSetting('site_name', 'Service Directory'),
+    'url' => APP_URL,
+    'description' => 'Local Service Directory for Raddoluwa/Seeduwa area',
+    'areaServed' => ['Raddoluwa', 'Seeduwa', 'Kandana', 'Katunayake', 'Negombo', 'Ja-Ela'],
+];
+echo '<script type="application/ld+json">' . json_encode($orgLd, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . '</script>';
+
+// JSON-LD — WebSite with SearchAction
+$siteLd = [
+    '@context' => 'https://schema.org',
+    '@type' => 'WebSite',
+    'url' => APP_URL,
+    'name' => getSetting('site_name', 'Service Directory'),
+    'potentialAction' => [
+        '@type' => 'SearchAction',
+        'target' => rtrim(APP_URL, '/') . '/?search={search_term_string}',
+        'query-input' => 'required name=search_term_string',
+    ],
+];
+echo '<script type="application/ld+json">' . json_encode($siteLd, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . '</script>';
+?>
 </head>
 <body>
 

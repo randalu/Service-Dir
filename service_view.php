@@ -68,26 +68,69 @@ if ($row) $googleMapsKey = $row['value'];
 
 $isFeatured = $service['is_featured'] && $service['featured_until'] && $service['featured_until'] >= date('Y-m-d');
 
+// SEO / OG variables (used by header.php)
 $pageTitle = htmlspecialchars($service['title']) . ' in ' . htmlspecialchars($service['area']) . ' | ' . htmlspecialchars($service['category']) . ' Service';
-
-$desc = htmlspecialchars(substr(strip_tags($service['description']), 0, 150));
-$imgUrl = 'https://lka.ovh/srv/uploads/' . htmlspecialchars($service['profile_img']);
-$pageUrl = 'https://lka.ovh/srv/service_view.php?id=' . $service_id;
+$metaDesc = htmlspecialchars(substr(strip_tags($service['description']), 0, 160));
+$canonicalUrl = rtrim(APP_URL, '/') . '/service_view.php?id=' . $service_id;
+$ogImage = rtrim(APP_URL, '/') . '/uploads/' . htmlspecialchars((!empty($images) ? $images[0]['image_path'] : $service['profile_img']));
+$ogType = 'article';
 
 $pageHead = <<<HEAD
-<meta name="description" content="{$desc}">
-<link rel="canonical" href="{$pageUrl}" />
-<meta property="og:type" content="article">
-<meta property="og:title" content="{$pageTitle}">
-<meta property="og:description" content="{$desc}">
-<meta property="og:url" content="{$pageUrl}">
-<meta property="og:image" content="{$imgUrl}">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="{$pageTitle}">
-<meta name="twitter:description" content="{$desc}">
-<meta name="twitter:image" content="{$imgUrl}">
-<meta name="keywords" content="{$service['category']}, {$service['area']}, services in {$service['area']}">
+<meta name="keywords" content="{$service['category']}, {$service['area']}, services in {$service['area']}, {$service['title']}">
 HEAD;
+
+// JSON-LD — BreadcrumbList
+$breadLd = [
+    '@context' => 'https://schema.org',
+    '@type' => 'BreadcrumbList',
+    'itemListElement' => [
+        ['@type' => 'ListItem', 'position' => 1, 'name' => 'Home', 'item' => rtrim(APP_URL, '/') . '/'],
+        ['@type' => 'ListItem', 'position' => 2, 'name' => $service['category'], 'item' => rtrim(APP_URL, '/') . '/category.php?id=' . $service['category_id']],
+        ['@type' => 'ListItem', 'position' => 3, 'name' => $service['title']],
+    ],
+];
+$pageHead .= '<script type="application/ld+json">' . json_encode($breadLd, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . '</script>';
+
+// JSON-LD — Service with AggregateRating + Reviews
+$serviceLd = [
+    '@context' => 'https://schema.org',
+    '@type' => 'Service',
+    'name' => $service['title'],
+    'description' => strip_tags($service['description']),
+    'provider' => [
+        '@type' => 'Person',
+        'name' => $service['first_name'] . ' ' . $service['last_name'],
+        'telephone' => $service['mobile'],
+        'image' => rtrim(APP_URL, '/') . '/uploads/' . $service['profile_img'],
+    ],
+    'areaServed' => $service['area'],
+    'category' => $service['category'],
+];
+$firstImage = !empty($images) ? rtrim(APP_URL, '/') . '/uploads/' . $images[0]['image_path'] : null;
+if ($firstImage) {
+    $serviceLd['image'] = $firstImage;
+}
+if (($ratingStats['review_count'] ?? 0) > 0) {
+    $serviceLd['aggregateRating'] = [
+        '@type' => 'AggregateRating',
+        'ratingValue' => number_format($ratingStats['avg_rating'], 1),
+        'ratingCount' => (int)$ratingStats['review_count'],
+        'bestRating' => 5,
+        'worstRating' => 1,
+    ];
+}
+if (count($reviews) > 0) {
+    $serviceLd['review'] = array_map(function($r) {
+        return [
+            '@type' => 'Review',
+            'author' => ['@type' => 'Person', 'name' => $r['first_name'] . ' ' . $r['last_name']],
+            'reviewRating' => ['@type' => 'Rating', 'ratingValue' => (int)$r['rating'], 'bestRating' => 5],
+            'reviewBody' => $r['comment'],
+            'datePublished' => $r['created_at'],
+        ];
+    }, $reviews);
+}
+$pageHead .= '<script type="application/ld+json">' . json_encode($serviceLd, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . '</script>';
 
 include 'header.php';
 ?>
@@ -131,7 +174,7 @@ include 'header.php';
         <?php if (count($sideImgs) > 0): ?>
         <div class="gallery-side">
           <?php foreach ($sideImgs as $img): ?>
-          <img src="uploads/<?= htmlspecialchars($img['image_path']) ?>" alt="Image" data-lightbox="uploads/<?= htmlspecialchars($img['image_path']) ?>">
+          <img src="uploads/<?= htmlspecialchars($img['image_path']) ?>" alt="<?= htmlspecialchars($service['title']) ?> - Image" data-lightbox="uploads/<?= htmlspecialchars($img['image_path']) ?>">
           <?php endforeach; ?>
         </div>
         <?php endif; ?>
@@ -191,6 +234,40 @@ include 'header.php';
           </div>
         </div>
       </div>
+
+      <!-- Social Share Buttons -->
+      <?php
+      $shareTitle = $service['title'] . ' - ' . $service['area'];
+      $shareDesc = substr(strip_tags($service['description']), 0, 120);
+      $shareUrl = $canonicalUrl;
+      $whatsappText = rawurlencode($shareTitle . "\n" . $shareDesc . "\n" . $shareUrl);
+      $twitterText = rawurlencode($shareTitle . "\n" . $shareUrl);
+      ?>
+      <div class="share-section mt-4">
+        <h5 class="fw-bold mb-3">Share this Service</h5>
+        <div class="d-flex gap-2 flex-wrap">
+          <a href="https://wa.me/?text=<?= $whatsappText ?>" target="_blank" rel="noopener" class="btn btn-success btn-sm btn-rounded" style="background:#25D366;border-color:#25D366">
+            💬 WhatsApp
+          </a>
+          <a href="https://www.facebook.com/sharer/sharer.php?u=<?= rawurlencode($shareUrl) ?>" target="_blank" rel="noopener" class="btn btn-sm btn-rounded" style="background:#1877F2;border-color:#1877F2;color:#fff">
+            📘 Facebook
+          </a>
+          <a href="https://twitter.com/intent/tweet?text=<?= $twitterText ?>" target="_blank" rel="noopener" class="btn btn-sm btn-rounded" style="background:#000;border-color:#000;color:#fff">
+            𝕏 Twitter
+          </a>
+          <button onclick="copyShareLink()" class="btn btn-outline-secondary btn-sm btn-rounded">
+            🔗 Copy Link
+          </button>
+        </div>
+      </div>
+
+      <script>
+      function copyShareLink() {
+        navigator.clipboard.writeText('<?= htmlspecialchars($shareUrl, ENT_QUOTES) ?>').then(function() {
+          alert('Link copied to clipboard!');
+        });
+      }
+      </script>
 
       <!-- Review Form -->
       <?php if (isset($_SESSION['user_id']) && $_SESSION['user_id'] != $service['provider_id']): ?>

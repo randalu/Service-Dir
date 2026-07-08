@@ -1,13 +1,11 @@
 <?php
-$pageTitle = 'Register - Service Directory';
+$pageTitle = 'Register - Create Your Account - Service Directory';
+$metaDesc = 'Create your free account on Raddoluwa/Seeduwa Service Directory. Join as a provider or browse local services.';
 
 require_once __DIR__ . '/includes/config.php';
 require_once __DIR__ . '/includes/helpers.php';
 configureSession();
 require_once __DIR__ . '/db.php';
-
-$categories = $pdo->query("SELECT id, name FROM categories ORDER BY name")->fetchAll();
-$areas = $pdo->query("SELECT name FROM areas ORDER BY name")->fetchAll();
 
 include 'header.php';
 ?>
@@ -63,40 +61,15 @@ include 'header.php';
           </div>
         </div>
 
-        <!-- Provider-only fields -->
+        <!-- Provider-only fields (optional — services can be added later from dashboard) -->
         <div id="providerFields">
           <div class="row">
             <div class="col-md-6 mb-3">
               <label class="form-label">Business Name (optional)</label>
               <input type="text" name="business_name" class="form-control" placeholder="Your business or trade name">
             </div>
-            <div class="col-md-6 mb-3">
-              <label class="form-label">Service Title</label>
-              <input type="text" name="service_title" class="form-control" placeholder="e.g. Expert Plumbing Repairs">
-            </div>
-            <div class="col-md-6 mb-3">
-              <label class="form-label">Service Category</label>
-              <select name="category_id" class="form-select">
-                <option value="">-- Select --</option>
-                <?php foreach ($categories as $cat): ?>
-                  <option value="<?= (int)$cat['id'] ?>"><?= htmlspecialchars($cat['name']) ?></option>
-                <?php endforeach; ?>
-              </select>
-            </div>
-            <div class="col-md-6 mb-3">
-              <label class="form-label">Service Area</label>
-              <select name="area_id" class="form-select">
-                <option value="">-- Select --</option>
-                <?php foreach ($areas as $area): ?>
-                  <option value="<?= htmlspecialchars($area['name']) ?>"><?= htmlspecialchars($area['name']) ?></option>
-                <?php endforeach; ?>
-              </select>
-            </div>
-            <div class="col-12 mb-3">
-              <label class="form-label">Service Description</label>
-              <textarea name="service_description" class="form-control" rows="4" placeholder="Describe your service (optional)"></textarea>
-            </div>
           </div>
+          <p class="text-muted small">You can add your services after registration from your dashboard.</p>
         </div>
 
         <button type="submit" class="btn btn-primary-custom w-100">Create Account</button>

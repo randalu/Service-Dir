@@ -27,10 +27,6 @@ $last = trim($_POST['last_name']);
 $mobile = formatMobile($_POST['mobile']);
 $email = trim($_POST['email'] ?? '');
 $business_name = trim($_POST['business_name'] ?? '');
-$title = trim($_POST['service_title'] ?? '');
-$category = isset($_POST['category_id']) ? (int)$_POST['category_id'] : 0;
-$area_name = trim($_POST['area_id'] ?? '');
-$desc = trim($_POST['service_description'] ?? '');
 
 // Check for duplicate mobile
 $stmt = $pdo->prepare("SELECT id FROM users WHERE mobile = ?");
@@ -70,23 +66,6 @@ try {
     $stmt = $pdo->prepare("INSERT INTO users (role, first_name, last_name, mobile, email, tier_id, business_name, password, profile_img) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
     $stmt->execute([$role, $first, $last, $mobile, $email ?: null, $freeTierId, $business_name ?: null, $password_hash, $imgName]);
     $user_id = $pdo->lastInsertId();
-
-    if ($role === 'provider' && $title && $category && $area_name && $desc) {
-        // Insert area if not exists
-        $stmt = $pdo->prepare("SELECT id FROM areas WHERE name = ?");
-        $stmt->execute([$area_name]);
-        $areaRow = $stmt->fetch();
-        if ($areaRow) {
-            $area_id = $areaRow['id'];
-        } else {
-            $stmt = $pdo->prepare("INSERT INTO areas (name) VALUES (?)");
-            $stmt->execute([$area_name]);
-            $area_id = $pdo->lastInsertId();
-        }
-
-        $stmt = $pdo->prepare("INSERT INTO services (user_id, title, category_id, area_id, description, status) VALUES (?, ?, ?, ?, ?, 'pending')");
-        $stmt->execute([$user_id, $title, $category, $area_id, $desc]);
-    }
 
     $pdo->commit();
 } catch (Exception $e) {

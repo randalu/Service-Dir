@@ -1,6 +1,4 @@
 <?php
-$pageTitle = 'Profile - Service Directory';
-
 require_once __DIR__ . '/includes/config.php';
 require_once __DIR__ . '/includes/helpers.php';
 configureSession();
@@ -18,6 +16,11 @@ $profile = $stmt->fetch();
 if (!$profile) {
     die("User not found.");
 }
+
+$pageTitle = htmlspecialchars($profile['first_name'] . ' ' . $profile['last_name']) . ' - User Profile';
+$metaDesc = htmlspecialchars($profile['first_name'] . ' ' . $profile['last_name']) . ' - ' . htmlspecialchars($profile['role'] === 'provider' ? ($profile['business_name'] ?? 'Service Provider') : 'User') . ' on Raddoluwa/Seeduwa Service Directory';
+$canonicalUrl = rtrim(APP_URL, '/') . '/profile_view.php?id=' . $user_id;
+$ogImage = rtrim(APP_URL, '/') . '/uploads/' . htmlspecialchars($profile['profile_img']);
 
 // Get rating stats
 $stmt = $pdo->prepare("SELECT AVG(rating) AS avg_rating, COUNT(*) AS review_count FROM reviews WHERE to_user_id = ? AND is_approved = 1");

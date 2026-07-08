@@ -20,7 +20,10 @@ if (!$category) {
     die("Category not found.");
 }
 
-$pageTitle = htmlspecialchars($category['name']) . ' - Service Directory';
+$pageTitle = htmlspecialchars($category['name']) . ' Services - Find ' . htmlspecialchars($category['name']) . ' in Raddoluwa/Seeduwa';
+$metaDesc = 'Find the best ' . htmlspecialchars($category['name']) . ' services in Raddoluwa/Seeduwa area. Browse trusted local ' . htmlspecialchars($category['name']) . ' providers.';
+$canonicalUrl = rtrim(APP_URL, '/') . '/category.php?id=' . $categoryId;
+$pageHead = '<meta name="keywords" content="' . htmlspecialchars($category['name']) . ', ' . htmlspecialchars($category['name']) . ' services Raddoluwa, ' . htmlspecialchars($category['name']) . ' Seeduwa">';
 
 $stmtCount = $pdo->prepare("SELECT COUNT(*) FROM services WHERE category_id = ? AND status = 'active'");
 $stmtCount->execute([$categoryId]);

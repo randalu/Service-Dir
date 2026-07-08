@@ -1,5 +1,4 @@
 <?php
-$pageTitle = 'Provider Profile - Service Directory';
 require_once __DIR__ . '/includes/config.php';
 require_once __DIR__ . '/includes/helpers.php';
 configureSession();
@@ -12,6 +11,11 @@ $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
 $stmt->execute([$userId]);
 $user = $stmt->fetch();
 if (!$user) { header('Location: index.php'); exit; }
+
+$pageTitle = htmlspecialchars($user['first_name'] . ' ' . $user['last_name']) . ' - Service Provider Profile';
+$metaDesc = htmlspecialchars($user['first_name'] . ' ' . $user['last_name']) . ' - ' . (!empty($user['business_name']) ? htmlspecialchars($user['business_name']) . ' | ' : '') . 'Service Provider in Raddoluwa/Seeduwa area';
+$canonicalUrl = rtrim(APP_URL, '/') . '/provider_profile.php?id=' . $userId;
+$ogImage = rtrim(APP_URL, '/') . '/uploads/' . htmlspecialchars($user['profile_img']);
 
 $stmt = $pdo->prepare("
     SELECT s.*, c.name AS category, a.name AS area, u.first_name, u.last_name, u.mobile

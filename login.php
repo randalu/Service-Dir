@@ -1,5 +1,6 @@
 <?php
 $pageTitle = 'Login - Service Directory';
+$metaDesc = 'Sign in to your Raddoluwa/Seeduwa Service Directory account. Access your dashboard and manage your service listings.';
 
 require_once __DIR__ . '/includes/config.php';
 require_once __DIR__ . '/includes/helpers.php';
