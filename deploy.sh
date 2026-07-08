@@ -56,11 +56,11 @@ SMS_API_KEY=b39e3d04-754e-4562-9e01-c53c3edce2e5
 SMS_SENDER_ID=RandaluWebs
 
 APP_ENV=production
-APP_URL=https://lka.ovh/dir
+APP_URL=https://ZRO.ovh/dir
 GOOGLE_MAPS_API_KEY=
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
-GOOGLE_REDIRECT_URI=https://lka.ovh/dir/google_callback.php
+GOOGLE_REDIRECT_URI=https://ZRO.ovh/dir/google_callback.php
 ENVEOF
 
 echo "=== Step 8: Running database migration ==="
@@ -70,7 +70,7 @@ php db.php 2>/dev/null || echo "db.php will auto-create tables on first visit"
 echo ""
 echo "============================================"
 echo "  DEPLOYMENT COMPLETE!"
-echo "  Visit: https://lka.ovh/dir"
+echo "  Visit: https://ZRO.ovh/dir"
 echo "  DB: zro_srv / zro_srv"
 echo "  DB Pass: RdlDir2026!Str0ng"
 echo "============================================"
