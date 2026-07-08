@@ -15,19 +15,23 @@ $to_user_id = (int)$_POST['to_user_id'];
 $service_id = isset($_POST['service_id']) ? (int)$_POST['service_id'] : null;
 $rating = (int)$_POST['rating'];
 $comment = trim($_POST['comment']);
+$referer = $_SERVER['HTTP_REFERER'] ?? 'index.php';
 
 if ($rating < 1 || $rating > 5) {
-    echo "<script>alert('Rating must be between 1 and 5.'); window.history.back();</script>";
+    setFlash('error', 'Rating must be between 1 and 5.');
+    header("Location: $referer");
     exit;
 }
 
 if (empty($comment)) {
-    echo "<script>alert('Please write a comment.'); window.history.back();</script>";
+    setFlash('error', 'Please write a comment.');
+    header("Location: $referer");
     exit;
 }
 
 if ($from_user_id == $to_user_id) {
-    echo "<script>alert('You cannot review yourself.'); window.history.back();</script>";
+    setFlash('error', 'You cannot review yourself.');
+    header("Location: $referer");
     exit;
 }
 
@@ -35,7 +39,8 @@ if ($from_user_id == $to_user_id) {
 $stmt = $pdo->prepare("SELECT id FROM reviews WHERE from_user_id = ? AND to_user_id = ? AND (service_id = ? OR (service_id IS NULL AND ? IS NULL))");
 $stmt->execute([$from_user_id, $to_user_id, $service_id, $service_id]);
 if ($stmt->fetch()) {
-    echo "<script>alert('You have already reviewed this user/service.'); window.history.back();</script>";
+    setFlash('error', 'You have already reviewed this user/service.');
+    header("Location: $referer");
     exit;
 }
 
@@ -50,4 +55,5 @@ $stmt->execute([$from_user_id, $to_user_id, $service_id, $rating, $comment, $is_
 
 $msg = $is_approved ? 'Review submitted successfully!' : 'Review submitted and pending approval.';
 $redirect = $service_id ? "service_view.php?id=$service_id" : "profile_view.php?id=$to_user_id";
-echo "<script>alert('$msg'); window.location='$redirect';</script>";
+setFlash('success', $msg);
+header("Location: $redirect");

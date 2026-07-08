@@ -20,12 +20,14 @@ $stmt->execute([$user_id]);
 $user = $stmt->fetch();
 
 if (!password_verify($current, $user['password'])) {
-    echo "<script>alert('Current password is incorrect'); window.location='change_password.php';</script>";
+    setFlash('error', 'Current password is incorrect');
+    header("Location: change_password.php");
     exit;
 }
 
 if ($new !== $confirm) {
-    echo "<script>alert('New passwords do not match'); window.location='change_password.php';</script>";
+    setFlash('error', 'New passwords do not match');
+    header("Location: change_password.php");
     exit;
 }
 
@@ -33,4 +35,5 @@ $new_hash = password_hash($new, PASSWORD_DEFAULT);
 $stmt = $pdo->prepare("UPDATE users SET password = ? WHERE id = ?");
 $stmt->execute([$new_hash, $user_id]);
 
-echo "<script>alert('Password updated successfully'); window.location='dashboard.php';</script>";
+setFlash('success', 'Password updated successfully');
+header("Location: dashboard.php");

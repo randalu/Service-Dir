@@ -1,13 +1,13 @@
 <?php
 $pageTitle = 'Service Directory - Find Local Services in Raddoluwa/Seeduwa';
 $metaDesc = 'Find trusted local services in Raddoluwa/Seeduwa — plumbing, electrical, cleaning, and more. Free directory for community service providers.';
-$canonicalUrl = rtrim(APP_URL, '/');
 
 require_once __DIR__ . '/includes/config.php';
 require_once __DIR__ . '/includes/helpers.php';
 configureSession();
 require_once __DIR__ . '/db.php';
 
+$canonicalUrl = rtrim(APP_URL, '/');
 $pageHead = '<meta name="keywords" content="Raddoluwa services, Seeduwa services, local service directory, Sri Lanka service providers, Raddoluwa Seeduwa">';
 include 'header.php';
 

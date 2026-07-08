@@ -73,13 +73,15 @@ if ($linkMode) {
     $stmt = $pdo->prepare("SELECT id FROM users WHERE google_id = ? AND id != ?");
     $stmt->execute([$googleId, $_SESSION['user_id']]);
     if ($stmt->fetch()) {
-        echo "<script>alert('This Google account is already linked to another user.'); window.location='dashboard.php';</script>";
+        setFlash('error', 'This Google account is already linked to another user.');
+        header("Location: dashboard.php");
         exit;
     }
 
     $stmt = $pdo->prepare("UPDATE users SET google_id = ?, google_email = ? WHERE id = ?");
     $stmt->execute([$googleId, $googleEmail, $_SESSION['user_id']]);
-    header('Location: dashboard.php?msg=google_linked');
+    setFlash('success', 'Google account linked successfully.');
+    header('Location: dashboard.php');
     exit;
 } else {
     // Login mode — find or error
@@ -102,7 +104,8 @@ if ($linkMode) {
         header('Location: dashboard.php');
         exit;
     } else {
-        echo "<script>alert('No account linked to this Google account. Please register with a mobile number first, then link your Google account from the dashboard.'); window.location='login.php';</script>";
+        setFlash('info', 'No account linked to this Google account. Please register with a mobile number first, then link your Google account from the dashboard.');
+        header("Location: login.php");
         exit;
     }
 }

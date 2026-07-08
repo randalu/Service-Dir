@@ -210,6 +210,44 @@ if (!function_exists('rateLimitCheck')) {
     }
 }
 
+// Flash message helpers
+if (!function_exists('setFlash')) {
+    function setFlash(string $type, string $message): void {
+        $_SESSION['_flashes'][] = ['type' => $type, 'message' => $message];
+    }
+}
+
+if (!function_exists('getFlashes')) {
+    function getFlashes(): array {
+        $flashes = $_SESSION['_flashes'] ?? [];
+        unset($_SESSION['_flashes']);
+        return $flashes;
+    }
+}
+
+if (!function_exists('setFlash')) {
+    function setFlash($type, $message) {
+        if (session_status() === PHP_SESSION_NONE) {
+            configureSession();
+        }
+        if (!isset($_SESSION['_flashes'])) {
+            $_SESSION['_flashes'] = [];
+        }
+        $_SESSION['_flashes'][] = ['type' => $type, 'message' => $message];
+    }
+}
+
+if (!function_exists('getFlashes')) {
+    function getFlashes() {
+        if (session_status() === PHP_SESSION_NONE) {
+            configureSession();
+        }
+        $flashes = $_SESSION['_flashes'] ?? [];
+        unset($_SESSION['_flashes']);
+        return $flashes;
+    }
+}
+
 if (!function_exists('renderCard')) {
     function renderCard($ad, $wrap = true) {
         $catIcons = [

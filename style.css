@@ -934,6 +934,28 @@ body {
     align-items: flex-start;
     gap: 0.5rem;
   }
+
+  /* Dashboard mobile */
+  .dashboard-card .card-header-custom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .dashboard-card .card-footer-info {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .d-flex.justify-content-between.align-items-center.mb-3 {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .d-flex.justify-content-between.align-items-center.mb-4 {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
 }
 
 /* Breadcrumb */
@@ -1189,4 +1211,16 @@ body {
   border-radius: var(--radius-full);
   font-weight: 700;
   display: inline-block;
+}
+
+/* ─── Toast ─── */
+.toast-container { z-index: 1080; }
+.toast { border-radius: var(--radius); border: none; box-shadow: var(--shadow-lg); min-width: 280px; }
+.toast-header { border-radius: var(--radius) var(--radius) 0 0; border-bottom: none; }
+.toast-body { padding: 0.75rem 1rem; }
+
+/* ─── Mobile Dashboard Offcanvas ─── */
+@media (max-width: 767px) {
+  .dashboard-toggle { display: inline-flex; }
+  .offcanvas-start { width: 280px; }
 }

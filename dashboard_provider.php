@@ -66,20 +66,6 @@ include 'header.php';
 ?>
 
 <div class="container mt-4">
-  <?php if (isset($_SESSION['message'])): ?>
-    <div class="alert alert-modern alert-success"><?= htmlspecialchars($_SESSION['message']) ?></div>
-    <?php unset($_SESSION['message']); ?>
-  <?php endif; ?>
-  <?php if (isset($_SESSION['error'])): ?>
-    <div class="alert alert-modern alert-danger"><?= htmlspecialchars($_SESSION['error']) ?></div>
-    <?php unset($_SESSION['error']); ?>
-  <?php endif; ?>
-  <?php if (!empty($_SESSION['just_registered'])): ?>
-    <div class="alert alert-modern alert-success">
-      <strong>Welcome!</strong> Your account has been created. A temporary password has been sent to your mobile. You can change it anytime from your profile.
-    </div>
-    <?php unset($_SESSION['just_registered']); ?>
-  <?php endif; ?>
 
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h3 class="fw-bold mb-0">Welcome, <?= htmlspecialchars($user['first_name']) ?>!</h3>

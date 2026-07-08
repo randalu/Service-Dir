@@ -264,10 +264,22 @@ include 'header.php';
       <script>
       function copyShareLink() {
         navigator.clipboard.writeText('<?= htmlspecialchars($shareUrl, ENT_QUOTES) ?>').then(function() {
-          alert('Link copied to clipboard!');
+          var toast = new bootstrap.Toast(document.getElementById('copyToast'));
+          toast.show();
         });
       }
       </script>
+
+      <!-- Copy Link Toast -->
+      <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1080">
+        <div id="copyToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="toast-header bg-success text-white">
+            <strong class="me-auto">Copied</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+          </div>
+          <div class="toast-body">Link copied to clipboard!</div>
+        </div>
+      </div>
 
       <!-- Review Form -->
       <?php if (isset($_SESSION['user_id']) && $_SESSION['user_id'] != $service['provider_id']): ?>

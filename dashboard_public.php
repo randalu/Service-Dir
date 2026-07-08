@@ -32,11 +32,6 @@ include 'header.php';
 ?>
 
 <div class="container mt-4">
-  <?php if (isset($_SESSION['message'])): ?>
-    <div class="alert alert-modern alert-success"><?= htmlspecialchars($_SESSION['message']) ?></div>
-    <?php unset($_SESSION['message']); ?>
-  <?php endif; ?>
-
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h3 class="fw-bold mb-0">Welcome, <?= htmlspecialchars($user['first_name']) ?>!</h3>
     <div class="d-flex gap-2">

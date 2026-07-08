@@ -32,7 +32,8 @@ $business_name = trim($_POST['business_name'] ?? '');
 $stmt = $pdo->prepare("SELECT id FROM users WHERE mobile = ?");
 $stmt->execute([$mobile]);
 if ($stmt->fetch()) {
-    echo "<script>alert('This mobile number is already registered.'); window.location='register.php';</script>";
+    setFlash('error', 'This mobile number is already registered.');
+    header("Location: register.php");
     exit;
 }
 
@@ -44,7 +45,8 @@ $imgName = "default.jpg";
 if (!empty($_FILES['profile_img']['name'])) {
     $validation = validateUpload($_FILES['profile_img']);
     if (!$validation['valid']) {
-        echo "<script>alert('" . htmlspecialchars($validation['error'], ENT_QUOTES) . "'); window.location='register.php';</script>";
+        setFlash('error', htmlspecialchars($validation['error']));
+        header("Location: register.php");
         exit;
     }
     $ext = strtolower(pathinfo($_FILES['profile_img']['name'], PATHINFO_EXTENSION));
@@ -57,7 +59,8 @@ if (!empty($_FILES['profile_img']['name'])) {
 // Get free tier ID
 $freeTierId = $pdo->query("SELECT id FROM pricing_tiers WHERE name = 'Free' LIMIT 1")->fetchColumn();
 if (!$freeTierId) {
-    echo "<script>alert('System error: pricing not configured.'); window.location='register.php';</script>";
+    setFlash('error', 'System error: pricing not configured.');
+    header("Location: register.php");
     exit;
 }
 
@@ -71,7 +74,8 @@ try {
 } catch (Exception $e) {
     $pdo->rollBack();
     error_log("Registration failed: " . $e->getMessage());
-    echo "<script>alert('Registration failed. Please try again.'); window.location='register.php';</script>";
+    setFlash('error', 'Registration failed. Please try again.');
+    header("Location: register.php");
     exit;
 }
 
@@ -85,7 +89,7 @@ $_SESSION['user_id'] = $user_id;
 $_SESSION['mobile'] = $mobile;
 $_SESSION['user_role'] = $role;
 $_SESSION['tier_id'] = $freeTierId;
-$_SESSION['just_registered'] = true;
 
-$alert = $smsSent ? 'Registration successful! Password sent to your mobile.' : 'Registration successful but SMS delivery failed. Save your password: ' . $password_plain;
-echo "<script>alert('" . htmlspecialchars($alert, ENT_QUOTES) . "'); window.location='dashboard.php';</script>";
+$msg = $smsSent ? 'Registration successful! Password sent to your mobile.' : 'Registration successful but SMS delivery failed. Save your password: ' . $password_plain;
+setFlash('success', $msg);
+header("Location: dashboard.php");

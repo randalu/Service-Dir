@@ -11,7 +11,8 @@ require_once __DIR__ . '/db.php';
 requireCsrf();
 
 if (($_SESSION['user_role'] ?? '') !== 'provider') {
-    echo "<script>alert('Only providers can list services.'); window.location='dashboard.php';</script>";
+    setFlash('error', 'Only providers can list services.');
+    header("Location: dashboard.php");
     exit;
 }
 
@@ -28,7 +29,8 @@ $count = $stmt->fetchColumn();
 $maxPosts = $user['max_posts'] ?? 3;
 
 if ($maxPosts !== null && $count >= $maxPosts) {
-    echo "<script>alert('Plan limit reached. Upgrade to add more services.'); window.location='pricing.php';</script>";
+    setFlash('error', 'Plan limit reached. Upgrade to add more services.');
+    header("Location: pricing.php");
     exit;
 }
 
@@ -91,10 +93,12 @@ try {
 } catch (Exception $e) {
     $pdo->rollBack();
     error_log("Add service failed: " . $e->getMessage());
-    echo "<script>alert('Failed to add service. Please try again.'); window.location='add_service.php';</script>";
+    setFlash('error', 'Failed to add service. Please try again.');
+    header("Location: add_service.php");
     exit;
 }
 
 $msg = $status === 'pending' ? 'Service added and is pending approval.' : 'Service added successfully!';
+setFlash('success', $msg);
 $redirect = ($_SESSION['user_role'] ?? '') === 'public' ? 'index.php' : 'dashboard.php';
-echo "<script>alert('$msg'); window.location='$redirect';</script>";
+header("Location: $redirect");

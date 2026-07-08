@@ -94,3 +94,12 @@ echo '<script type="application/ld+json">' . json_encode($siteLd, JSON_UNESCAPED
     </div>
   </div>
 </nav>
+
+<?php foreach (getFlashes() as $flash): ?>
+  <div class="container mt-3">
+    <div class="alert alert-modern alert-<?= htmlspecialchars($flash['type']) ?> alert-dismissible fade show" role="alert">
+      <?= htmlspecialchars($flash['message']) ?>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  </div>
+<?php endforeach; ?>

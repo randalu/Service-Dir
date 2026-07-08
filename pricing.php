@@ -1,12 +1,13 @@
 <?php
 $pageTitle = 'Pricing Plans - Service Directory';
 $metaDesc = 'Choose a pricing plan for your service listing. Free, One-Time, Monthly, and Yearly plans available for providers in Raddoluwa/Seeduwa.';
-$canonicalUrl = rtrim(APP_URL, '/') . '/pricing.php';
 
 require_once __DIR__ . '/includes/config.php';
 require_once __DIR__ . '/includes/helpers.php';
 configureSession();
 require_once __DIR__ . '/db.php';
+
+$canonicalUrl = rtrim(APP_URL, '/') . '/pricing.php';
 
 $tiers = $pdo->query("SELECT * FROM pricing_tiers ORDER BY sort_order")->fetchAll();
 

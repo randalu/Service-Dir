@@ -12,7 +12,8 @@ if (!isset($_SESSION['user_id'])) {
 require_once __DIR__ . '/db.php';
 
 if (($_SESSION['user_role'] ?? '') !== 'provider') {
-    echo "<script>alert('Only providers can list services.'); window.location='dashboard.php';</script>";
+    setFlash('error', 'Only providers can list services.');
+    header("Location: dashboard.php");
     exit;
 }
 
@@ -29,7 +30,8 @@ $serviceCount = $stmt->fetchColumn();
 $maxPosts = $user['max_posts'] ?? 3;
 
 if ($maxPosts !== null && $serviceCount >= $maxPosts) {
-    echo "<script>alert('You have reached your plan limit of $maxPosts services. Upgrade to add more.'); window.location='pricing.php';</script>";
+    setFlash('error', "You have reached your plan limit of $maxPosts services. Upgrade to add more.");
+    header("Location: pricing.php");
     exit;
 }
 

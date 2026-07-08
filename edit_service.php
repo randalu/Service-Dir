@@ -19,7 +19,8 @@ $stmt->execute([$service_id, $user_id]);
 $service = $stmt->fetch();
 
 if (!$service) {
-    echo "<script>alert('Service not found or access denied.'); window.location='dashboard.php';</script>";
+    setFlash('error', 'Service not found or access denied.');
+    header("Location: dashboard.php");
     exit;
 }
 
@@ -83,12 +84,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $pdo->commit();
-        $_SESSION['message'] = "Service updated successfully.";
+        setFlash('success', 'Service updated successfully.');
         header("Location: dashboard.php");
         exit;
     } catch (Exception $e) {
         $pdo->rollBack();
-        $_SESSION['error'] = "Failed to update service.";
+        setFlash('error', 'Failed to update service.');
         header("Location: edit_service.php?id=$service_id");
         exit;
     }

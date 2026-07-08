@@ -14,7 +14,8 @@ $stmt->execute([$tier_id]);
 $tier = $stmt->fetch();
 
 if (!$tier) {
-    echo "<script>alert('Invalid tier.'); window.location='pricing.php';</script>";
+    setFlash('error', 'Invalid tier.');
+    header("Location: pricing.php");
     exit;
 }
 
@@ -65,12 +66,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $pdo->commit();
 
-        echo "<script>alert('Subscription successful! Reference: $payment_ref\\nInvoice: $invNo'); window.location='dashboard.php';</script>";
+        $refMsg = "Subscription successful! Reference: $payment_ref | Invoice: $invNo";
+        setFlash('success', $refMsg);
+        header("Location: dashboard.php");
         exit;
     } catch (Exception $e) {
         $pdo->rollBack();
         error_log("Subscription failed: " . $e->getMessage());
-        echo "<script>alert('Subscription failed. Please try again.'); window.location='pricing.php';</script>";
+        setFlash('error', 'Subscription failed. Please try again.');
+        header("Location: pricing.php");
         exit;
     }
 }

@@ -7,7 +7,8 @@ require_once __DIR__ . '/db.php';
 requireCsrf();
 
 if (!rateLimitCheck('login_' . $_SERVER['REMOTE_ADDR'], 5, 300)) {
-    echo "<script>alert('Too many attempts. Try again later.'); window.location='login.php';</script>";
+    setFlash('error', 'Too many attempts. Try again later.');
+    header("Location: login.php");
     exit;
 }
 
@@ -32,5 +33,6 @@ if ($user && password_verify($password, $user['password'])) {
     header("Location: dashboard.php");
     exit;
 } else {
-    echo "<script>alert('Invalid login credentials'); window.location='login.php';</script>";
+    setFlash('error', 'Invalid login credentials');
+    header("Location: login.php");
 }

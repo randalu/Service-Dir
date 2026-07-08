@@ -19,7 +19,8 @@ $email = trim($_POST['email']);
 if (!empty($_FILES['profile_img']['name'])) {
     $validation = validateUpload($_FILES['profile_img']);
     if (!$validation['valid']) {
-        echo "<script>alert('" . htmlspecialchars($validation['error'], ENT_QUOTES) . "'); window.location='edit_profile.php';</script>";
+        setFlash('error', htmlspecialchars($validation['error']));
+        header("Location: edit_profile.php");
         exit;
     }
     $ext = strtolower(pathinfo($_FILES['profile_img']['name'], PATHINFO_EXTENSION));
@@ -35,4 +36,5 @@ if (!empty($_FILES['profile_img']['name'])) {
     $stmt->execute([$first, $last, $email, $user_id]);
 }
 
-echo "<script>alert('Profile updated successfully'); window.location='dashboard.php';</script>";
+setFlash('success', 'Profile updated successfully');
+header("Location: dashboard.php");
