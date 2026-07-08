@@ -1,0 +1,8 @@
+.env
+/node_modules/
+/vendor/
+srv/error_log
+srv/admin/error_log
+*.log
+.DS_Store
+Thumbs.db
